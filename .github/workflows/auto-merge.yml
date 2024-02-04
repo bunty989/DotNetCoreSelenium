@@ -28,6 +28,6 @@ jobs:
       pull-requests: write
     if: github.actor == 'dependabot[bot]'
     steps:
-      - uses: hmarr/auto-approve-action@v3.2.1
+      - uses: hmarr/auto-approve-action@v4.0.0
     env:
       GITHUB_TOKEN: ${{secrets.pat}}
