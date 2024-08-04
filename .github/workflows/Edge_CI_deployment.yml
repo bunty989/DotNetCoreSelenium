@@ -33,7 +33,7 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v4.3.4
+      uses: actions/upload-artifact@v4.3.5
       if: always()
       with:
         path: |
