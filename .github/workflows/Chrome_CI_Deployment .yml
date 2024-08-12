@@ -12,7 +12,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
@@ -28,12 +28,12 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Setup Chrome
-      uses: browser-actions/setup-chrome@v1.4.0
+      uses: browser-actions/setup-chrome@v1.7.2
     - run: chrome --version
     - name: Test
       run: dotnet test --no-build --verbosity normal
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v3.1.3
+      uses: actions/upload-artifact@v4.3.6
       if: always()
       with:
         path: |
