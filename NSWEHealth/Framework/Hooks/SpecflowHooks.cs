@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using AventStack.ExtentReports;
+﻿using AventStack.ExtentReports;
 using AventStack.ExtentReports.Gherkin.Model;
+using AventStack.ExtentReports.Model;
 using AventStack.ExtentReports.Reporter;
 using NSWEHealth.Framework.Drivers;
 using NSWEHealth.Framework.Wrapper;
@@ -12,6 +9,7 @@ using Serilog;
 using Serilog.Core;
 using Serilog.Events;
 using TechTalk.SpecFlow;
+using Log = Serilog.Log;
 
 namespace NSWEHealth.Framework.Hooks
 {
@@ -19,29 +17,24 @@ namespace NSWEHealth.Framework.Hooks
     public sealed class SpecflowHooks
     {
         [ThreadStatic]
-        private static DriverHelper? _driverHelper;
-
-        public SpecflowHooks(DriverHelper? driverHelper) => _driverHelper = driverHelper;
-
+        private static IWebDriver? _driver;
         [ThreadStatic]
         private static ExtentTest? _feature;
-
         [ThreadStatic]
         private static ExtentTest? _scenario;
-
         [ThreadStatic]
         private static ExtentTest? _step;
 
         private static ExtentReports? _extent;
         private static BrowserVersionHelper _browserVersionHelper = new();
-        private string _scenarioType = "ui";
+        private static string _scenarioType = "ui";
         private static string BrowserType => ConfigHelper.ReadConfigValue
             (TestConstant.ConfigTypes.WebDriverConfig, TestConstant.ConfigTypesKey.Browser);
         private static string? BrowserVersion => _browserVersionHelper.GetBrowserVersion(
             (TestConstant.BrowserType)Enum.Parse(typeof(TestConstant.BrowserType), BrowserType, true));
 
         [BeforeScenario]
-        public void BeforeScenario(ScenarioContext context)
+        public static void BeforeScenario(ScenarioContext context)
         {
             var scenarioName = context.ScenarioInfo.Title;
             if (context.ScenarioInfo.Arguments?.Count > 0)
@@ -66,8 +59,9 @@ namespace NSWEHealth.Framework.Hooks
                 }
             }
             if (!_scenarioType.Equals("ui")) return;
-            _driverHelper?.InvokeDriverInstance(
+            DriverHelper.InvokeDriverInstance(
                 (TestConstant.BrowserType)Enum.Parse(typeof(TestConstant.BrowserType), BrowserType, true));
+            _driver = DriverHelper.Driver;
         }
 
         [BeforeTestRun]
@@ -84,8 +78,8 @@ namespace NSWEHealth.Framework.Hooks
                 .WriteTo.File(reportFilePath + TestConstant.PathVariables.LogName,
                     outputTemplate: "{Timestamp: yyyy-MM-dd HH:mm:ss.fff} | {Level:u3} | {Message} | {NewLine}",
                     rollingInterval: RollingInterval.Day).CreateLogger();
-            ExtentHtmlReporter htmlReport = new(reportFilePath + "\\");
-            htmlReport.LoadConfig(TestConstant.PathVariables.ReportPath + Path.DirectorySeparatorChar
+            ExtentSparkReporter htmlReport = new(reportFilePath + "\\ExtentReport.html");
+            htmlReport.LoadXMLConfig(TestConstant.PathVariables.ReportPath + Path.DirectorySeparatorChar
                                                                         + TestConstant.PathVariables.ExtentConfigName);
             _extent = new ExtentReports();
             Dictionary<string, string?> sysInfo = new()
@@ -99,8 +93,6 @@ namespace NSWEHealth.Framework.Hooks
             foreach (var (key, value) in sysInfo) { _extent.AddSystemInfo(key, value); }
             _extent.AttachReporter(htmlReport);
         }
-
-
 
         [BeforeFeature]
         public static void BeforeFeature(FeatureContext context)
@@ -223,7 +215,7 @@ namespace NSWEHealth.Framework.Hooks
         public void AfterScenario(ScenarioContext context)
         {
             if (_scenarioType.Equals("api")) return;
-            _driverHelper?.QuitDriverInstance();
+            DriverHelper.QuitDriverInstance();
             Log.Debug("Ending Scenario {0} execution", context.ScenarioInfo.Title);
         }
 
@@ -233,7 +225,7 @@ namespace NSWEHealth.Framework.Hooks
             Log.CloseAndFlush();
         }
 
-        private static MediaEntityModelProvider AttachScreenShot(string name)
+        private static Media AttachScreenShot(string name)
         {
             var base64 = TakesScreenShot();
             return MediaEntityBuilder.CreateScreenCaptureFromBase64String(base64, name).Build();
@@ -241,13 +233,13 @@ namespace NSWEHealth.Framework.Hooks
 
         private static string? TakesScreenShot()
         {
-            return (_driverHelper?.Driver as ITakesScreenshot)?.GetScreenshot().AsBase64EncodedString;
+            return (_driver as ITakesScreenshot)?.GetScreenshot().AsBase64EncodedString;
         }
 
         private static LogEventLevel GetLogLevel()
         {
             var logEventLevel =
-                ConfigHelper.ReadConfigValue("", TestConstant.LoggerLevel.LogLevel).ToLower() switch
+                ConfigHelper.ReadConfigValue("", TestConstant.LoggerLevel.LogLevel)?.ToLower() switch
                 {
                     "all" => LogEventLevel.Verbose,
                     "info" => LogEventLevel.Information,

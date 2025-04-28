@@ -15,28 +15,28 @@ namespace NSWEHealth.Amazon.PageObjects
         private readonly WebHelper _webHelper;
         protected IWebElement? LabelSearchResult =>
             _webHelper.InitialiseDynamicWebElement(LocatorType.CssSelector,
-                "[class$='top-small'] span[class]");
+                "[data-cel-widget^='UPPER-RESULT_INFO_BAR'] h2 span[class]");
         protected IWebElement? BtnSearch =>
             _webHelper.InitialiseDynamicWebElement(LocatorType.CssSelector,
                 "[id$='submit-button']");
         protected IWebElement? ChkBoxBrandSony =>
             _webHelper.InitialiseDynamicWebElement(LocatorType.CssSelector,
-                "[aria-label='Sony'] span div");
+                "[aria-label*='the filter Sony'] input+i");
         protected IWebElement? ChkBoxResolution4K =>
             _webHelper.InitialiseDynamicWebElement(LocatorType.CssSelector,
-                "[aria-label='4K'] span div");
-        protected IWebElement? ChkBoxModel2022 =>
+                "[aria-label*='the filter 4K'] input+i");
+        protected IWebElement? ChkBoxModel2024 =>
             _webHelper.InitialiseDynamicWebElement(LocatorType.CssSelector,
-                "[aria-label='2022'] span div");
+                "[aria-label*='the filter 2024'] input+i");
         protected IWebElement? DrpDownSortBy =>
             _webHelper.InitialiseDynamicWebElement(LocatorType.CssSelector,
-                "[aria-label='Sort by:'] span span");
+                "[id='s-result-sort-select']+span[class*='button']");
         protected IWebElement? LabelLowToHigh =>
             _webHelper.InitialiseDynamicWebElement(LocatorType.CssSelector,
                 "#s-result-sort-select_1");
-        protected IWebElement? ImgSonyTv =>
+        protected IWebElement? SelectedDropdownTxt =>
             _webHelper.InitialiseDynamicWebElement(LocatorType.CssSelector,
-                "[alt$='(KD55X75K)']");
+                "[data-action='a-dropdown-button'] span[class$='prompt']");
 
         public SearchResultPage(IWebDriver? driver) =>
             _webHelper = new WebHelper(driver);
@@ -51,7 +51,7 @@ namespace NSWEHealth.Amazon.PageObjects
                 BrandName.Sony => ChkBoxBrandSony,
                 _ => null
             };
-            _webHelper?.PerformWebDriverAction(brandElement, WebDriverAction.Click, null);
+            _webHelper?.PerformWebDriverAction(brandElement, WebDriverAction.Click);
         }
 
         public void FilterByResolution(string resolution)
@@ -61,27 +61,31 @@ namespace NSWEHealth.Amazon.PageObjects
                 AmazonTestConstant.Resolution.FourK => ChkBoxResolution4K,
                 _ => null
             };
-            _webHelper?.PerformWebDriverAction(resolutionElement, WebDriverAction.Click, null);
+            _webHelper?.PerformWebDriverAction(resolutionElement, WebDriverAction.Click);
         }
 
         public void FilterByModel(string model)
         {
             var modelElement = model switch
             {
-                AmazonTestConstant.Model.TwentyTwentyTwo => ChkBoxModel2022,
+                AmazonTestConstant.Model.TwentyTwentyFour => ChkBoxModel2024,
                 _ => null
             };
-            _webHelper?.PerformWebDriverAction(modelElement, WebDriverAction.Click, null);
+            _webHelper?.PerformWebDriverAction(modelElement, WebDriverAction.Click);
         }
 
         public bool VerifyFilteredResultListDisplayed() =>
-            WebHelper.IsElementDisplayed(ChkBoxModel2022);
+            //WebHelper.IsElementDisplayed(ChkBoxModel2024);
+        _webHelper.IsChecked(ChkBoxModel2024?.FindElement(By.XPath("preceding-sibling::input")));
 
         public void SortByPriceLowToHigh()
         {
-            _webHelper.PerformWebDriverAction(DrpDownSortBy, WebDriverAction.Click, null);
+            _webHelper.PerformWebDriverAction(DrpDownSortBy, WebDriverAction.Click);
             _webHelper.PerformWebDriverAction(LabelLowToHigh, WebDriverAction.Focus, null);
-            _webHelper.PerformWebDriverAction(LabelLowToHigh, WebDriverAction.Click, null);
+            _webHelper.PerformWebDriverAction(LabelLowToHigh, WebDriverAction.JavaScriptClick);
         }
+
+        public string? GetSortedListText() =>
+         _webHelper?.ReturnVisibleText(SelectedDropdownTxt);
     }
 }

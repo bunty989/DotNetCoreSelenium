@@ -6,22 +6,19 @@ using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.IE;
 using Serilog;
-using WebDriverManager;
-using WebDriverManager.DriverConfigs.Impl;
-using WebDriverManager.Helpers;
 using Browser = NSWEHealth.Framework.Wrapper.TestConstant.BrowserType;
 
 namespace NSWEHealth.Framework.Drivers
 {
-    public class DriverHelper
+    public static class DriverHelper
     {
-        public IWebDriver? Driver;
-        private string? _browserName;
-        private string? _browserVersion;
+        public static IWebDriver? Driver;
+        private static string? _browserName;
+        private static string? _browserVersion;
         //=> ((RemoteWebDriver)Driver).Capabilities.GetCapability("browserName").ToString();
-        private BrowserVersionHelper _browserVersionHelper => new();
+        private static BrowserVersionHelper _browserVersionHelper => new();
 
-        public IWebDriver? InvokeDriverInstance(Browser browserType)
+        public static IWebDriver? InvokeDriverInstance(Browser browserType)
         {
             _browserVersion = _browserVersionHelper.GetBrowserVersion(browserType);
             switch (browserType)
@@ -35,15 +32,6 @@ namespace NSWEHealth.Framework.Drivers
                         chromeOption.AddUserProfilePreference("credentials_enable_service", false);
                         chromeOption.AddUserProfilePreference("profile.password_manager_enabled", false);
                         chromeOption.PageLoadStrategy = PageLoadStrategy.Eager;
-                        try
-                        {
-                            new DriverManager().SetUpDriver(new ChromeConfig(), _browserVersion);
-                        }
-                        catch (Exception)
-                        {
-                            new DriverManager().SetUpDriver(new ChromeConfig(),
-                                VersionResolveStrategy.MatchingBrowser);
-                        }
                         Driver = new ChromeDriver(chromeOption);
                         break;
                     }
@@ -58,7 +46,6 @@ namespace NSWEHealth.Framework.Drivers
                         };
                         ieOptions.AddAdditionalInternetExplorerOption(CapabilityType.AcceptSslCertificates, true);
                         ieOptions.PageLoadStrategy = PageLoadStrategy.Eager;
-                        new DriverManager().SetUpDriver(new InternetExplorerConfig(), _browserVersion);
                         Driver = new InternetExplorerDriver(ieOptions);
                         break;
                     }
@@ -68,9 +55,8 @@ namespace NSWEHealth.Framework.Drivers
                         {
                             AcceptInsecureCertificates = true
                         };
-                        ffOptions.SetPreference("permissions.default.image", 2);
+                        ffOptions.SetPreference("permissions.default.image", 1);
                         ffOptions.PageLoadStrategy = PageLoadStrategy.Eager;
-                        new DriverManager().SetUpDriver(new FirefoxConfig());
                         Driver = new FirefoxDriver(ffOptions);
                         break;
                     }
@@ -81,7 +67,6 @@ namespace NSWEHealth.Framework.Drivers
                             AcceptInsecureCertificates = true,
                             PageLoadStrategy = PageLoadStrategy.Eager
                         };
-                        new DriverManager().SetUpDriver(new EdgeConfig(), _browserVersion);
                         Driver = new EdgeDriver(edgeOptions);
                         break;
                     }
@@ -93,15 +78,6 @@ namespace NSWEHealth.Framework.Drivers
                         chromeOption.AddUserProfilePreference("credentials_enable_service", false);
                         chromeOption.AddUserProfilePreference("profile.password_manager_enabled", false);
                         chromeOption.PageLoadStrategy = PageLoadStrategy.Eager;
-                        try
-                        {
-                            new DriverManager().SetUpDriver(new ChromeConfig(), _browserVersion);
-                        }
-                        catch (Exception)
-                        {
-                            new DriverManager().SetUpDriver(new ChromeConfig(),
-                                VersionResolveStrategy.MatchingBrowser);
-                        }
                         Driver = new ChromeDriver(chromeOption);
                         break;
                     }
@@ -114,15 +90,6 @@ namespace NSWEHealth.Framework.Drivers
                         chromeOption.AddUserProfilePreference("credentials_enable_service", false);
                         chromeOption.AddUserProfilePreference("profile.password_manager_enabled", false);
                         chromeOption.PageLoadStrategy = PageLoadStrategy.Eager;
-                        try
-                        {
-                            new DriverManager().SetUpDriver(new ChromeConfig(), _browserVersion);
-                        }
-                        catch (Exception)
-                        {
-                            new DriverManager().SetUpDriver(new ChromeConfig(),
-                                VersionResolveStrategy.MatchingBrowser);
-                        }
                         Driver = new ChromeDriver(chromeOption);
                         break;
                     }
@@ -135,15 +102,6 @@ namespace NSWEHealth.Framework.Drivers
                         chromeOption.AddUserProfilePreference("credentials_enable_service", false);
                         chromeOption.AddUserProfilePreference("profile.password_manager_enabled", false);
                         chromeOption.PageLoadStrategy = PageLoadStrategy.Eager;
-                        try
-                        {
-                            new DriverManager().SetUpDriver(new ChromeConfig(), _browserVersion);
-                        }
-                        catch (Exception)
-                        {
-                            new DriverManager().SetUpDriver(new ChromeConfig(),
-                                VersionResolveStrategy.MatchingBrowser);
-                        }
                         Driver = new ChromeDriver(chromeOption);
                         break;
                     }
@@ -162,13 +120,13 @@ namespace NSWEHealth.Framework.Drivers
             return Driver;
         }
 
-        public void Navigate(string url)
+        public static void Navigate(string url)
         {
             Driver?.Navigate().GoToUrl(url);
             Log.Information("Driver successfully Navigated to {0}", Driver?.Url);
         }
 
-        public void QuitDriverInstance()
+        public static void QuitDriverInstance()
         {
             if (Driver == null)
             {

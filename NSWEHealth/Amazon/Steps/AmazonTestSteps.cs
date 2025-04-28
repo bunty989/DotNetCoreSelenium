@@ -6,6 +6,7 @@ using NSWEHealth.Framework.Wrapper;
 using TechTalk.SpecFlow;
 using ConfigType = NSWEHealth.Framework.Wrapper.TestConstant.ConfigTypes;
 using ConfigKey = NSWEHealth.Framework.Wrapper.TestConstant.ConfigTypesKey;
+using OpenQA.Selenium;
 
 
 namespace NSWEHealth.Amazon.Steps
@@ -15,17 +16,15 @@ namespace NSWEHealth.Amazon.Steps
     {
         private readonly HomePage? _homePage;
         private readonly SearchResultPage? _searchResultPage;
-        private readonly DriverHelper? _driverHelper;
+        private readonly IWebDriver? _driver;
         private readonly CommonMethods? _commonMethods;
         private readonly ScenarioContext? _scenarioContext;
         private static string Protocol => ConfigHelper.ReadConfigValue(ConfigType.WebDriverConfig, ConfigKey.Protocol);
         private static string Url => SetAppUrl.SetUrl(Protocol);
 
-        public AmazonTestSteps(ScenarioContext scenarioContext,
-            DriverHelper driverHelper)
+        public AmazonTestSteps(ScenarioContext scenarioContext)
         {
-            _driverHelper = driverHelper;
-            var driver = driverHelper.Driver;
+            var driver = DriverHelper.Driver;
             _commonMethods = new CommonMethods();
             _scenarioContext = scenarioContext;
             _homePage = new HomePage(driver);
@@ -35,7 +34,7 @@ namespace NSWEHealth.Amazon.Steps
         [Given(@"I open the Amazon australia home page")]
         public void GivenIOpenTheAmazonAustraliaHomePage()
         {
-            _driverHelper?.Navigate(Url);
+            DriverHelper.Navigate(Url);
         }
 
 
@@ -50,7 +49,7 @@ namespace NSWEHealth.Amazon.Steps
         public void ThenTheResultShowsTheListOfTheSearchedItem()
         {
             var result = _searchResultPage?.GetLabelDisplayedResultFor();
-            Assert.AreEqual(_scenarioContext["ItemName"], result?.Replace("\"", ""));
+            Assert.That(_scenarioContext["ItemName"], Is.EqualTo(result?.Replace("\"", "")));
         }
 
         [When(@"I select filter for '([^']*)' as '([^']*)'")]
@@ -72,7 +71,6 @@ namespace NSWEHealth.Amazon.Steps
                 }
                 case "model":
                 {
-
                     _searchResultPage?.FilterByModel(filterValue);
                     break;
                 }
@@ -80,16 +78,22 @@ namespace NSWEHealth.Amazon.Steps
         }
 
         [Then(@"I verify all the filter checkboxes are checked")]
-        [Then(@"items are sorted by the price from low to high")]
         public void ThenIVerifyAllTheFilterCheckboxesAreChecked()
         {
-            Assert.IsTrue(_searchResultPage?.VerifyFilteredResultListDisplayed());
+            Assert.That(_searchResultPage?.VerifyFilteredResultListDisplayed(), Is.True, "All filter checkboxes are not checked");
         }
 
         [When(@"I sort the result by price low to high")]
         public void WhenISortTheResultByPriceLowToHigh()
         {
             _searchResultPage?.SortByPriceLowToHigh();
+        }
+
+        [Then(@"items are sorted by the price from low to high")]
+        public void ThenItemsAreSortedByThePriceFromLowToHigh()
+        {
+            Assert.That(_searchResultPage?.GetSortedListText(), Is.EqualTo("Price: Low to high"), 
+                "Items are not sorted by price low to high");
         }
 
     }

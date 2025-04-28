@@ -142,7 +142,7 @@ this.FeatureBackground();
  testRunner.And("I select filter for \'Resolution\' as \'4K\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 14
- testRunner.And("I select filter for \'Model\' as \'2022\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("I select filter for \'Model\' as \'2024\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 15
  testRunner.Then("I verify all the filter checkboxes are checked", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -181,7 +181,7 @@ this.FeatureBackground();
  testRunner.And("I select filter for \'Resolution\' as \'4K\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 21
- testRunner.And("I select filter for \'Model\' as \'2022\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("I select filter for \'Model\' as \'2024\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 22
  testRunner.And("I sort the result by price low to high", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");

@@ -21,7 +21,7 @@
 
         public class Model
         {
-            public const string TwentyTwentyTwo = "2022";
+            public const string TwentyTwentyFour = "2024";
             public const string TwentyTwentyOne = "2021";
             public const string TwentyTwenty = "2020";
             public const string TwentyNineteen = "2019";
