@@ -12,19 +12,20 @@
             Tavice
         }
 
-        public class Resolution
+        public class DisplayTech
         {
-            public const string FourK = "4K";
-            public const string TenEightyP = "1080p";
-            public const string SevenTwentyP = "720p";
+            public const string OLED = "OLED";
+            public const string LED = "LED";
+            public const string LCD = "LCD";
+            public const string QLED = "QLED";
         }
 
-        public class Model
+        public class ScreenSize
         {
-            public const string TwentyTwentyFour = "2024";
-            public const string TwentyTwentyOne = "2021";
-            public const string TwentyTwenty = "2020";
-            public const string TwentyNineteen = "2019";
+            public const string SixtyToSixtyNine = "60-69 in";
+            public const string ThirtyThreeToFortyThree = "33-43 in";
+            public const string FiftyToFiftyNine = "50-59 in";
+            public const string Seventy = "70 in";
         }
     }
 }

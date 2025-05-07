@@ -9,13 +9,13 @@ Acceptance criteria
  Search for Sony TV
  Select filters like (on the left-hand panel)
 - Brand: Sony
-- Resolution: 4k
-- Model Year: 2022
+- Display Technology: OLED
+- Screen Size: 60 - 69 inch
  Output the results – List of TVs based on the price (low to high)
  Provide reports of the execution
 
 Framework Features the following 
-- Automated CICD builds in Github actions
+- Automated CI-CD builds in Github actions
 - Cross Browser Builds
 - Cross OS builds
 - Parallel Execution

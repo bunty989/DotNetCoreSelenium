@@ -1,0 +1,74 @@
+name: CI Deployment
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    name: ${{ matrix.browser }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-2025, macos-latest]
+        browser: [Chromeheadless, Firefox, Edgeheadless, Safari]
+        exclude:
+          - os: ubuntu-latest
+            browser: safari
+          - os: windows-2025
+            browser: safari
+          - os: ubuntu-latest
+            browser: edgeheadless
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: szenius/set-timezone@v2.0
+        with:
+          timezoneWindows: "AUS Eastern Standard Time"
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Replace tokens
+        uses: cschleiden/replace-tokens@v1
+        with:
+          files: '["**/*.json"]'
+        env:
+          browser: ${{ matrix.browser }}
+
+      # Only install/start Xvfb for Firefox on Ubuntu
+      - name: Install Xvfb
+        if: matrix.os == 'ubuntu-latest' && matrix.browser == 'Firefox'
+        run: sudo apt-get update && sudo apt-get install -y xvfb
+
+      - name: Start Xvfb
+        if: matrix.os == 'ubuntu-latest' && matrix.browser == 'Firefox'
+        run: |
+          Xvfb :99 -screen 0 1920x1080x24 &
+          export DISPLAY=:99
+
+      - name: Build
+        run: dotnet build --no-restore
+
+      - name: Test
+        run: dotnet test --no-build --verbosity normal
+        env:
+          DISPLAY: ${{ (matrix.os == 'ubuntu-latest' && matrix.browser == 'Firefox') && ':99' || '' }}
+
+      - name: Upload Artifact
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: artifact_${{ matrix.os }}_${{ matrix.browser }}
+          path: |
+            ${{ github.workspace }}/NSWEHealth/Logs/
+          if-no-files-found: warn
+          compression-level: 9

@@ -1,10 +1,10 @@
-﻿using System;
-using NSWEHealth.Framework.Wrapper;
+﻿using NSWEHealth.Framework.Wrapper;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.IE;
+using OpenQA.Selenium.Safari;
 using Serilog;
 using Browser = NSWEHealth.Framework.Wrapper.TestConstant.BrowserType;
 
@@ -16,95 +16,98 @@ namespace NSWEHealth.Framework.Drivers
         private static string? _browserName;
         private static string? _browserVersion;
         //=> ((RemoteWebDriver)Driver).Capabilities.GetCapability("browserName").ToString();
-        private static BrowserVersionHelper _browserVersionHelper => new();
 
         public static IWebDriver? InvokeDriverInstance(Browser browserType)
         {
-            _browserVersion = _browserVersionHelper.GetBrowserVersion(browserType);
+            _browserVersion = BrowserVersionHelper.GetBrowserVersion(browserType);
             switch (browserType)
             {
-                case Browser.Chrome:
+                case Browser.Chrome or Browser.ChromeHeadless or Browser.ChromeIncognito:
+                {
+                    var chromeOption = new ChromeOptions();
+                    chromeOption.AddArguments("start-maximized", "--disable-gpu", "--no-sandbox");
+                    if (browserType == Browser.ChromeHeadless)
                     {
-                        var chromeOption = new ChromeOptions();
-                        chromeOption.AddArguments("start-maximized", "--disable-gpu", "--no-sandbox");
-                        chromeOption.AddExcludedArgument("enable-automation");
-                        //chromeOption.AddAdditionalCapability("useAutomationExtension", false);
-                        chromeOption.AddUserProfilePreference("credentials_enable_service", false);
-                        chromeOption.AddUserProfilePreference("profile.password_manager_enabled", false);
-                        chromeOption.PageLoadStrategy = PageLoadStrategy.Eager;
-                        Driver = new ChromeDriver(chromeOption);
-                        break;
+                        chromeOption.AddArguments("window-size=1280,800", "--headless=new");
                     }
+                    else if (browserType == Browser.ChromeIncognito)
+                    {
+                        chromeOption.AddArguments("--incognito");
+                    }
+                    chromeOption.AddExcludedArgument("enable-automation");
+                    //chromeOption.AddAdditionalCapability("useAutomationExtension", false);
+                    chromeOption.AddUserProfilePreference("credentials_enable_service", false);
+                    chromeOption.AddUserProfilePreference("profile.password_manager_enabled", false);
+                    chromeOption.PageLoadStrategy = PageLoadStrategy.Eager;
+                    Driver = new ChromeDriver(chromeOption);
+                    break;
+                }
                 case Browser.InternetExplorer:
+                {
+                    var ieOptions = new InternetExplorerOptions
                     {
-                        var ieOptions = new InternetExplorerOptions
-                        {
-                            IntroduceInstabilityByIgnoringProtectedModeSettings = true,
-                            RequireWindowFocus = true,
-                            EnsureCleanSession = true,
-                            IgnoreZoomLevel = true
-                        };
-                        ieOptions.AddAdditionalInternetExplorerOption(CapabilityType.AcceptSslCertificates, true);
-                        ieOptions.PageLoadStrategy = PageLoadStrategy.Eager;
-                        Driver = new InternetExplorerDriver(ieOptions);
-                        break;
-                    }
-                case Browser.Firefox:
+                        IntroduceInstabilityByIgnoringProtectedModeSettings = true,
+                        RequireWindowFocus = true,
+                        EnsureCleanSession = true,
+                        IgnoreZoomLevel = true
+                    };
+                    ieOptions.AddAdditionalInternetExplorerOption(CapabilityType.AcceptSslCertificates, true);
+                    ieOptions.PageLoadStrategy = PageLoadStrategy.Eager;
+                    Driver = new InternetExplorerDriver(ieOptions);
+                    break;
+                }
+                case Browser.Firefox or Browser.FirefoxHeadless:
+                {
+                    var ffOptions = new FirefoxOptions
                     {
-                        var ffOptions = new FirefoxOptions
-                        {
-                            AcceptInsecureCertificates = true
-                        };
-                        ffOptions.SetPreference("permissions.default.image", 1);
-                        ffOptions.PageLoadStrategy = PageLoadStrategy.Eager;
-                        Driver = new FirefoxDriver(ffOptions);
-                        break;
-                    }
-                case Browser.Edge:
+                        AcceptInsecureCertificates = true,
+                    };
+                    ffOptions.AddArguments("--window-size=1920,1080");
+                    if (browserType == Browser.FirefoxHeadless)
                     {
-                        var edgeOptions = new EdgeOptions
-                        {
-                            AcceptInsecureCertificates = true,
-                            PageLoadStrategy = PageLoadStrategy.Eager
-                        };
-                        Driver = new EdgeDriver(edgeOptions);
-                        break;
+                        ffOptions.AddArguments("-headless");
                     }
-                case Browser.ChromeHeadless:
+                    ffOptions.SetPreference("permissions.default.image", 1);
+                    ffOptions.PageLoadStrategy = PageLoadStrategy.Eager;
+                    Driver = new FirefoxDriver(ffOptions);
+                    break;
+                }
+                case Browser.Edge or Browser.EdgeHeadless:
+                {
+                    var edgeOptions = new EdgeOptions
                     {
-                        var chromeOption = new ChromeOptions();
-                        chromeOption.AddArguments("disable-gpu", "no-sandbox", "window-size=1280,800", "--headless=new");
-                        chromeOption.AddExcludedArgument("enable-automation");
-                        chromeOption.AddUserProfilePreference("credentials_enable_service", false);
-                        chromeOption.AddUserProfilePreference("profile.password_manager_enabled", false);
-                        chromeOption.PageLoadStrategy = PageLoadStrategy.Eager;
-                        Driver = new ChromeDriver(chromeOption);
-                        break;
-                    }
-                case Browser.ChromeIncognito:
+                        AcceptInsecureCertificates = true,
+                        PageLoadStrategy = PageLoadStrategy.Eager
+                    };
+                    if (browserType == Browser.EdgeHeadless)
                     {
-                        var chromeOption = new ChromeOptions();
-                        chromeOption.AddArguments("start-maximized", "--disable-gpu", "--no-sandbox", "--incognito");
-                        chromeOption.AddExcludedArgument("enable-automation");
-                        chromeOption.AddAdditionalChromeOption("useAutomationExtension", false);
-                        chromeOption.AddUserProfilePreference("credentials_enable_service", false);
-                        chromeOption.AddUserProfilePreference("profile.password_manager_enabled", false);
-                        chromeOption.PageLoadStrategy = PageLoadStrategy.Eager;
-                        Driver = new ChromeDriver(chromeOption);
-                        break;
+                        edgeOptions.AddArguments("window-size=1280,800", "--headless=new");
                     }
+                    Driver = new EdgeDriver(edgeOptions);
+                    break;
+                }
+                case Browser.Safari:
+                {
+                    var safariOptions = new SafariOptions
+                    {
+                        AcceptInsecureCertificates = true,
+                        PageLoadStrategy = PageLoadStrategy.Eager
+                    };
+                    Driver = new SafariDriver(safariOptions);
+                    break;
+                }
                 default:
-                    {
-                        var chromeOption = new ChromeOptions();
-                        chromeOption.AddArguments("start-maximized", "--disable-gpu", "--no-sandbox");
-                        chromeOption.AddExcludedArgument("enable-automation");
-                        chromeOption.AddAdditionalChromeOption("useAutomationExtension", false);
-                        chromeOption.AddUserProfilePreference("credentials_enable_service", false);
-                        chromeOption.AddUserProfilePreference("profile.password_manager_enabled", false);
-                        chromeOption.PageLoadStrategy = PageLoadStrategy.Eager;
-                        Driver = new ChromeDriver(chromeOption);
-                        break;
-                    }
+                {
+                    var chromeOption = new ChromeOptions();
+                    chromeOption.AddArguments("start-maximized", "--disable-gpu", "--no-sandbox");
+                    chromeOption.AddExcludedArgument("enable-automation");
+                    chromeOption.AddAdditionalChromeOption("useAutomationExtension", false);
+                    chromeOption.AddUserProfilePreference("credentials_enable_service", false);
+                    chromeOption.AddUserProfilePreference("profile.password_manager_enabled", false);
+                    chromeOption.PageLoadStrategy = PageLoadStrategy.Eager;
+                    Driver = new ChromeDriver(chromeOption);
+                    break;
+                }
             }
             _browserName = browserType.ToString();
             Log.Information("Started {0} WebDriver successfully", _browserName);
@@ -112,11 +115,11 @@ namespace NSWEHealth.Framework.Drivers
             Driver.Manage().Timeouts().ImplicitWait =
                 TimeSpan.FromSeconds(int.Parse
                 (ConfigHelper.ReadConfigValue
-                (TestConstant.ConfigTypes.WebDriverConfig, TestConstant.ConfigTypesKey.ImplicitWaitTimeout)));
+                (TestConstant.ConfigTypes.WebDriverConfig, TestConstant.ConfigTypesKey.ImplicitWaitTimeout) ?? "0"));
             Driver.Manage().Timeouts().PageLoad =
                 TimeSpan.FromSeconds(int.Parse
                 (ConfigHelper.ReadConfigValue
-                    (TestConstant.ConfigTypes.WebDriverConfig, TestConstant.ConfigTypesKey.PageLoadTimeOut)));
+                    (TestConstant.ConfigTypes.WebDriverConfig, TestConstant.ConfigTypesKey.PageLoadTimeOut) ?? "0"));
             return Driver;
         }
 
