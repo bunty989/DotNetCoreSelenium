@@ -19,16 +19,16 @@ namespace NSWEHealth.Amazon.Steps
         private readonly IWebDriver? _driver;
         private readonly CommonMethods? _commonMethods;
         private readonly ScenarioContext? _scenarioContext;
-        private static string Protocol => ConfigHelper.ReadConfigValue(ConfigType.WebDriverConfig, ConfigKey.Protocol);
+        private static string Protocol => ConfigHelper.ReadConfigValue(ConfigType.WebDriverConfig, ConfigKey.Protocol) ?? string.Empty;
         private static string Url => SetAppUrl.SetUrl(Protocol);
 
         public AmazonTestSteps(ScenarioContext scenarioContext)
         {
-            var driver = DriverHelper.Driver;
+            _driver = DriverHelper.Driver;
             _commonMethods = new CommonMethods();
             _scenarioContext = scenarioContext;
-            _homePage = new HomePage(driver);
-            _searchResultPage = new SearchResultPage(driver);
+            _homePage = new HomePage(_driver);
+            _searchResultPage = new SearchResultPage(_driver);
         }
 
         [Given(@"I open the Amazon australia home page")]
