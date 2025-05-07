@@ -112,11 +112,11 @@ namespace NSWEHealth.Framework.Drivers
             Driver.Manage().Timeouts().ImplicitWait =
                 TimeSpan.FromSeconds(int.Parse
                 (ConfigHelper.ReadConfigValue
-                (TestConstant.ConfigTypes.WebDriverConfig, TestConstant.ConfigTypesKey.ImplicitWaitTimeout)));
+                (TestConstant.ConfigTypes.WebDriverConfig, TestConstant.ConfigTypesKey.ImplicitWaitTimeout) ?? "0"));
             Driver.Manage().Timeouts().PageLoad =
                 TimeSpan.FromSeconds(int.Parse
                 (ConfigHelper.ReadConfigValue
-                    (TestConstant.ConfigTypes.WebDriverConfig, TestConstant.ConfigTypesKey.PageLoadTimeOut)));
+                    (TestConstant.ConfigTypes.WebDriverConfig, TestConstant.ConfigTypesKey.PageLoadTimeOut) ?? "0"));
             return Driver;
         }
 

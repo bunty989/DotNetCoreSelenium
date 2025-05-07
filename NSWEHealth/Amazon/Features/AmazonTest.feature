@@ -1,3 +1,4 @@
+@Retry
 Feature: Test the Amazon Web App
 
 Background: Open Amazon App
