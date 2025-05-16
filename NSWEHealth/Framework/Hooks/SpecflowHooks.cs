@@ -69,7 +69,7 @@ namespace NSWEHealth.Framework.Hooks
         {
             var formattedDateTime = DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss");
             var reportFilePath =
-                TestConstant.PathVariables.GetBaseDirectory + TestConstant.PathVariables.HtmlReportFolder
+                TestConstant.PathVariables.GetBaseDirectory + Path.DirectorySeparatorChar + TestConstant.PathVariables.HtmlReportFolder
                                                             + Path.DirectorySeparatorChar + formattedDateTime;
             CommonMethods.CreateFolder(reportFilePath);
             var levelSwitch = new LoggingLevelSwitch(GetLogLevel());
@@ -78,7 +78,7 @@ namespace NSWEHealth.Framework.Hooks
                 .WriteTo.File(reportFilePath + TestConstant.PathVariables.LogName,
                     outputTemplate: "{Timestamp: yyyy-MM-dd HH:mm:ss.fff} | {Level:u3} | {Message} | {NewLine}",
                     rollingInterval: RollingInterval.Day).CreateLogger();
-            ExtentSparkReporter htmlReport = new(reportFilePath + "\\ExtentReport.html");
+            ExtentSparkReporter htmlReport = new(reportFilePath + Path.DirectorySeparatorChar + "ExtentReport.html");
             htmlReport.LoadXMLConfig(TestConstant.PathVariables.ReportPath + Path.DirectorySeparatorChar
                                                                         + TestConstant.PathVariables.ExtentConfigName);
             _extent = new ExtentReports();
