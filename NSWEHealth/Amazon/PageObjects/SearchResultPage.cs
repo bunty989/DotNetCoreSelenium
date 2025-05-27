@@ -22,12 +22,12 @@ namespace NSWEHealth.Amazon.PageObjects
         protected IWebElement? ChkBoxBrandSony =>
             _webHelper.InitialiseDynamicWebElement(LocatorType.CssSelector,
                 "[aria-label*='the filter Sony'] input+i");
-        protected IWebElement? ChkBoxResolution4K =>
+        protected IWebElement? ChkBoxDisplayTechOled =>
             _webHelper.InitialiseDynamicWebElement(LocatorType.CssSelector,
-                "[aria-label*='the filter 4K'] input+i");
-        protected IWebElement? ChkBoxModel2024 =>
+                "[aria-label*='the filter OLED'] input+i");
+        protected IWebElement? ChkBoxScreenSize60In =>
             _webHelper.InitialiseDynamicWebElement(LocatorType.CssSelector,
-                "[aria-label*='the filter 2024'] input+i");
+                "[aria-label*='the filter 60-69 in'] input+i");
         protected IWebElement? DrpDownSortBy =>
             _webHelper.InitialiseDynamicWebElement(LocatorType.CssSelector,
                 "[id='s-result-sort-select']+span[class*='button']");
@@ -37,6 +37,9 @@ namespace NSWEHealth.Amazon.PageObjects
         protected IWebElement? SelectedDropdownTxt =>
             _webHelper.InitialiseDynamicWebElement(LocatorType.CssSelector,
                 "[data-action='a-dropdown-button'] span[class$='prompt']");
+        protected IWebElement? Spinner =>
+            _webHelper.FindWebElementFromDomUsingCssSelector
+            ("[class^='s-result-list-placeholder'] span[class^='a-spinner']");
 
         public SearchResultPage(IWebDriver? driver) =>
             _webHelper = new WebHelper(driver);
@@ -52,40 +55,67 @@ namespace NSWEHealth.Amazon.PageObjects
                 _ => null
             };
             _webHelper?.PerformWebDriverAction(brandElement, WebDriverAction.Click);
+            WaitTillSpinnerExists();
         }
 
-        public void FilterByResolution(string resolution)
+        public void FilterByDisplayTech(string displayTech)
         {
-            var resolutionElement = resolution switch
+            var displayTechElement = displayTech switch
             {
-                AmazonTestConstant.Resolution.FourK => ChkBoxResolution4K,
+                AmazonTestConstant.DisplayTech.OLED => ChkBoxDisplayTechOled,
                 _ => null
             };
-            _webHelper?.PerformWebDriverAction(resolutionElement, WebDriverAction.Click);
+            _webHelper?.PerformWebDriverAction(displayTechElement, WebDriverAction.Click);
+            WaitTillSpinnerExists();
         }
 
-        public void FilterByModel(string model)
+        public void FilterByScreenSize(string screenSize)
         {
-            var modelElement = model switch
+            var screenSizeElement = screenSize switch
             {
-                AmazonTestConstant.Model.TwentyTwentyFour => ChkBoxModel2024,
+                AmazonTestConstant.ScreenSize.SixtyToSixtyNine => ChkBoxScreenSize60In,
                 _ => null
             };
-            _webHelper?.PerformWebDriverAction(modelElement, WebDriverAction.Click);
+            _webHelper?.PerformWebDriverAction(screenSizeElement, WebDriverAction.Click);
+            WaitTillSpinnerExists();
         }
 
         public bool VerifyFilteredResultListDisplayed() =>
             //WebHelper.IsElementDisplayed(ChkBoxModel2024);
-        _webHelper.IsChecked(ChkBoxModel2024?.FindElement(By.XPath("preceding-sibling::input")));
+        _webHelper.IsChecked(ChkBoxScreenSize60In?.FindElement(By.XPath("preceding-sibling::input")));
 
         public void SortByPriceLowToHigh()
         {
-            _webHelper.PerformWebDriverAction(DrpDownSortBy, WebDriverAction.Click);
-            _webHelper.PerformWebDriverAction(LabelLowToHigh, WebDriverAction.Focus, null);
-            _webHelper.PerformWebDriverAction(LabelLowToHigh, WebDriverAction.JavaScriptClick);
+            bool flag = false;
+            do
+            {
+                _webHelper.PerformWebDriverAction(DrpDownSortBy, WebDriverAction.Click);
+                _webHelper.PerformWebDriverAction(LabelLowToHigh, WebDriverAction.Focus, null);
+                _webHelper.GetPageReady();
+                flag = WebHelper.IsElementDisplayed(LabelLowToHigh);
+            }
+            while (!flag);
+            var locator = "#s-result-sort-select_1";
+            var js = "document.querySelector(\""+locator+"\").click()";
+            _webHelper.ExecuteJs(js);
+            WaitTillSpinnerExists();
+            //_webHelper.PerformWebDriverAction(LabelLowToHigh, WebDriverAction.Click);
         }
 
         public string? GetSortedListText() =>
          _webHelper?.ReturnVisibleText(SelectedDropdownTxt);
+
+        public void WaitTillSpinnerExists()
+        {
+            bool spinnerFlag = true;
+            var count = 0;
+            do
+            {
+                Thread.Sleep(500);
+                spinnerFlag = WebHelper.IsElementDisplayed(Spinner);
+                count++;
+            }
+            while (spinnerFlag && count<30);
+        }
     }
 }

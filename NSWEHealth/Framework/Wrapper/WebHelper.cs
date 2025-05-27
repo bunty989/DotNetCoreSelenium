@@ -29,9 +29,9 @@ namespace NSWEHealth.Framework.Wrapper
         {
             _locator = locatorType;
             _locatorInfo = locatorInfo;
-            var dWait = new WebDriverWait(Driver,
-                TimeSpan.FromSeconds(int.Parse(ConfigHelper.ReadConfigValue(ConfigType.WebDriverConfig,
-                    ConfigKey.ObjectIdentificationTimeOut))));
+            var dWait = new WebDriverWait(Driver ?? throw new ArgumentNullException(nameof(Driver)),
+                        TimeSpan.FromSeconds(int.Parse(ConfigHelper.ReadConfigValue(ConfigType.WebDriverConfig,
+                            ConfigKey.ObjectIdentificationTimeOut) ?? "0")));
             dWait.IgnoreExceptionTypes(typeof(StaleElementReferenceException),
                 typeof(NoSuchElementException),
                 typeof(ElementNotInteractableException),
@@ -45,7 +45,7 @@ namespace NSWEHealth.Framework.Wrapper
                     case LocatorType.Id:
                         {
                             dynamicElement = dWait.Until(ExpectedConditions.ElementToBeClickable(By.Id(locatorInfo)));
-                            webElements = new List<IWebElement?>(Driver?.FindElements(By.Id(locatorInfo)));
+                            webElements = [.. Driver?.FindElements(By.Id(locatorInfo))];
                             if (webElements.Count > 1)
                             {
                                 foreach (var webE in webElements.Where(IsElementDisplayed))
@@ -70,7 +70,7 @@ namespace NSWEHealth.Framework.Wrapper
                     case LocatorType.XPath:
                         {
                             dynamicElement = dWait.Until(ExpectedConditions.ElementToBeClickable(By.XPath(locatorInfo)));
-                            webElements = new List<IWebElement?>(Driver?.FindElements(By.XPath(locatorInfo)));
+                            webElements = [.. Driver?.FindElements(By.XPath(locatorInfo))];
                             if (webElements.Count > 1)
                             {
                                 foreach (var webE in webElements.Where(IsElementDisplayed))
@@ -321,7 +321,7 @@ namespace NSWEHealth.Framework.Wrapper
                 LocatorType.LinkText => new List<IWebElement?>(Driver?.FindElements(By.LinkText(locatorInfo))),
                 LocatorType.PartialLinkText => new List<IWebElement?>(Driver?.FindElements(By.PartialLinkText(locatorInfo))),
                 LocatorType.TagName => new List<IWebElement?>(Driver?.FindElements(By.TagName(locatorInfo))),
-                _ => new List<IWebElement?>(Driver?.FindElements(By.XPath(locatorInfo)))
+                _ => [.. Driver?.FindElements(By.XPath(locatorInfo))]
             };
             return webElements;
         }
