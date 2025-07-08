@@ -143,7 +143,7 @@ this.FeatureBackground();
  testRunner.And("I select filter for \'Brand\' as \'Sony\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 14
- testRunner.And("I select filter for \'ScreenSize\' as \'60-69 in\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("I select filter for \'ScreenSize\' as \'50-59 in\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 15
  testRunner.And("I select filter for \'DisplayTech\' as \'OLED\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
@@ -183,7 +183,7 @@ this.FeatureBackground();
  testRunner.And("I select filter for \'Brand\' as \'Sony\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 21
- testRunner.And("I select filter for \'ScreenSize\' as \'60-69 in\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("I select filter for \'ScreenSize\' as \'50-59 in\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 22
  testRunner.And("I select filter for \'DisplayTech\' as \'OLED\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");

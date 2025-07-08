@@ -112,6 +112,7 @@ namespace NSWEHealth.Framework.Drivers
             _browserName = browserType.ToString();
             Log.Information("Started {0} WebDriver successfully", _browserName);
             Driver.Manage().Window.Maximize();
+            Driver.Manage().Window.Size = new System.Drawing.Size(1280, 800);
             Driver.Manage().Timeouts().ImplicitWait =
                 TimeSpan.FromSeconds(int.Parse
                 (ConfigHelper.ReadConfigValue

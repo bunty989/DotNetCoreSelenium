@@ -22,6 +22,8 @@ jobs:
             browser: safari
           - os: ubuntu-latest
             browser: edgeheadless
+          - os: macos-latest
+            browser: edgeheadless
     steps:
       - uses: actions/checkout@v4
 

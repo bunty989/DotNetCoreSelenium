@@ -35,6 +35,7 @@ namespace NSWEHealth.Amazon.Steps
         public void GivenIOpenTheAmazonAustraliaHomePage()
         {
             DriverHelper.Navigate(Url);
+            _homePage?.NavigateToAmazonAustralia();
         }
 
 
@@ -42,6 +43,7 @@ namespace NSWEHealth.Amazon.Steps
         public void WhenIWantToSearchFor(string itemName)
         {
             _scenarioContext["ItemName"] = itemName;
+            _homePage?.CheckHomePageIsDisplayed();
             _homePage?.SearchForAnItem(itemName);
         }
 

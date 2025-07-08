@@ -11,6 +11,9 @@ namespace NSWEHealth.Amazon.PageObjects
     internal class HomePage
     {
         private readonly WebHelper _webHelper;
+        protected IWebElement? BtnContinueShopping =>
+            _webHelper.InitialiseDynamicWebElement(LocatorType.CssSelector,
+                "[alt='Continue shopping']");
         protected IWebElement? TxtSearch =>
             _webHelper.InitialiseDynamicWebElement(LocatorType.CssSelector,
                 "#twotabsearchtextbox");
@@ -20,6 +23,22 @@ namespace NSWEHealth.Amazon.PageObjects
 
         public HomePage(IWebDriver? driver) =>
             _webHelper = new WebHelper(driver);
+
+        public void NavigateToAmazonAustralia()
+        {
+            if (_webHelper.FindWebElementFromDomUsingCssSelector("[id='nav-bb-logo']") != null)
+            {
+                _webHelper.PageRefresh();
+                _webHelper.GetPageReady();
+            }
+        }
+
+        public void CheckHomePageIsDisplayed() {
+            if (_webHelper.FindWebElementFromDomUsingCssSelector("[alt='Continue shopping']") != null)
+            { 
+                _webHelper.PerformWebDriverAction(BtnContinueShopping,WebDriverAction.Click, null);
+            }
+        }
 
         public void SearchForAnItem(string itemName)
         {

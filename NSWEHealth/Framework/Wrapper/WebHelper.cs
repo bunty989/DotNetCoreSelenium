@@ -434,6 +434,11 @@ namespace NSWEHealth.Framework.Wrapper
             Driver.ExecuteJavaScript(javaScript, args);
         }
 
+        public void PageRefresh()
+        { 
+            Driver?.Navigate().Refresh();
+        }
+
         public string? GetWindowTitle()
         {
             GetPageReady();
