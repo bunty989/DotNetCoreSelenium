@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-2025, macos-latest]
+        os: [ubuntu-latest, windows-2025, macos-13]
         browser: [Chromeheadless, Firefox, Edgeheadless, Safari]
         exclude:
           - os: ubuntu-latest
@@ -21,8 +21,6 @@ jobs:
           - os: windows-2025
             browser: safari
           - os: ubuntu-latest
-            browser: edgeheadless
-          - os: macos-latest
             browser: edgeheadless
     steps:
       - uses: actions/checkout@v4
