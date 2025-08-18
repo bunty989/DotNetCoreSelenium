@@ -6,16 +6,18 @@ on:
   pull_request_target:
     types: [ opened, ready_for_review, converted_to_draft ]
 
-permissions: write-all
-
 jobs:
   auto-assign:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
     steps:
       - name: 'Auto-assign issue'
         uses: pozil/auto-assign-issue@v2.2.0
         with:
           assignees: ${{github.actor}}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
           numOfAssignee: 1
           allowSelfAssign: true
           removePreviousAssignees: true
