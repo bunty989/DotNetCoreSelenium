@@ -9,6 +9,7 @@ on:
 jobs:
   auto-assign:
     runs-on: ubuntu-latest
+    if: ${{ github.actor != 'dependabot[bot]' }}
     permissions:
       issues: write
       pull-requests: write
