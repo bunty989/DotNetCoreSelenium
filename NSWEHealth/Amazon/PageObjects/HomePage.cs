@@ -48,8 +48,13 @@ namespace NSWEHealth.Amazon.PageObjects
 
         private void EnterItemToSearch(string itemName)
         {
+            if(!_webHelper.GetDriverType().ToLowerInvariant().Contains("safari"))
             _webHelper.PerformWebDriverAction(TxtSearch, WebDriverAction.Input,
                 itemName);
+            else
+            {
+                TxtSearch?.SendKeys(itemName);
+            }
         }
 
         private void ClickSubmitBtn()

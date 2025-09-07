@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-2025, macos-13]
+        os: [ubuntu-latest, windows-2025, macos-latest]
         browser: [Chromeheadless, Firefox, Edgeheadless, Safari]
         exclude:
           - os: ubuntu-latest
@@ -30,7 +30,7 @@ jobs:
           timezoneWindows: "AUS Eastern Standard Time"
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 9.0.x
 

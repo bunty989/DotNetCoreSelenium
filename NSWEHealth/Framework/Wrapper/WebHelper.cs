@@ -501,6 +501,40 @@ namespace NSWEHealth.Framework.Wrapper
             }
         }
 
+        public string? GetDriverType()
+        {
+            if (Driver == null) return null;
+
+            try
+            {
+                switch (Driver)
+                {
+                    case OpenQA.Selenium.Chrome.ChromeDriver:
+                        return "Chrome";
+                    case OpenQA.Selenium.Firefox.FirefoxDriver:
+                        return "Firefox";
+                    case OpenQA.Selenium.Edge.EdgeDriver:
+                        return "Edge";
+                    case OpenQA.Selenium.Safari.SafariDriver:
+                        return "Safari";
+                    case OpenQA.Selenium.IE.InternetExplorerDriver:
+                        return "InternetExplorer";
+                    case OpenQA.Selenium.Remote.RemoteWebDriver remote:
+                        {
+                            var cap = remote.Capabilities?.GetCapability("browserName")?.ToString();
+                            return string.IsNullOrEmpty(cap) ? remote.GetType().Name : cap;
+                        }
+                    default:
+                        return Driver.GetType().Name;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Unable to determine Driver type due to {0}", ex.Message);
+                return Driver.GetType().Name;
+            }
+        }
+
         private void WebElementExceptionHandler(WebDriverAction webDriverAction, string? strData = null)
         {
             var objWebElement = InitialiseDynamicWebElement(_locator, _locatorInfo);
