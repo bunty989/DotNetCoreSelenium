@@ -25,6 +25,9 @@ namespace NSWEHealth.Amazon.PageObjects
         protected IWebElement? ChkBoxDisplayTechOled =>
             _webHelper.InitialiseDynamicWebElement(LocatorType.CssSelector,
                 "[aria-label*='the filter OLED'] input+i");
+        protected IWebElement? ChkBoxDisplayRes4K =>
+            _webHelper.InitialiseDynamicWebElement(LocatorType.CssSelector,
+                "[aria-label*='the filter 4K/Ultra HD'] input+i");
         protected IWebElement? ChkBoxScreenSize50In =>
             _webHelper.InitialiseDynamicWebElement(LocatorType.CssSelector,
                 "[aria-label*='the filter 50-59 in'] input+i");
@@ -72,6 +75,17 @@ namespace NSWEHealth.Amazon.PageObjects
             WaitTillSpinnerExists();
         }
 
+        public void FilterByDisplayResolution(string displayResolution)
+        {
+            var displayResElement = displayResolution switch
+            {
+                AmazonTestConstant.DisplayResolution.FourK => ChkBoxDisplayRes4K,
+                _ => null
+            };
+            _webHelper?.PerformWebDriverAction(displayResElement, WebDriverAction.Click);
+            WaitTillSpinnerExists();
+        }
+
         public void FilterByScreenSize(string screenSize)
         {
             var screenSizeElement = screenSize switch
@@ -86,7 +100,7 @@ namespace NSWEHealth.Amazon.PageObjects
 
         public bool VerifyFilteredResultListDisplayed() =>
             //WebHelper.IsElementDisplayed(ChkBoxModel2024);
-        _webHelper.IsChecked(ChkBoxScreenSize50In?.FindElement(By.XPath("preceding-sibling::input")));
+        _webHelper.IsChecked(ChkBoxDisplayRes4K?.FindElement(By.XPath("preceding-sibling::input")));
 
         public void SortByPriceLowToHigh()
         {

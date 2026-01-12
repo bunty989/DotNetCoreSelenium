@@ -88,12 +88,12 @@ namespace NSWEHealth.Framework.Drivers
                 }
                 case Browser.Safari:
                 {
-                    var safariOptions = new SafariOptions
-                    {
-                        AcceptInsecureCertificates = true,
-                        PageLoadStrategy = PageLoadStrategy.Eager
-                    };
-                    Driver = new SafariDriver(safariOptions);
+                    //var safariOptions = new SafariOptions
+                    //{
+                    //    AcceptInsecureCertificates = true,
+                    //    PageLoadStrategy = PageLoadStrategy.Eager
+                    //};
+                    Driver = new SafariDriver();
                     break;
                 }
                 default:
