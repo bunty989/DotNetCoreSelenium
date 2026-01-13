@@ -75,6 +75,11 @@ namespace NSWEHealth.Amazon.Steps
                     _searchResultPage?.FilterByScreenSize(filterValue);
                     break;
                 }
+                case "displayresolution":
+                {
+                    _searchResultPage?.FilterByDisplayResolution(filterValue);
+                    break;
+                }
             }
         }
 
