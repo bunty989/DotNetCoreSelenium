@@ -22,7 +22,7 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.3" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.3" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
-		<PackageReference Include="Microsoft.TestPlatform.TestHost" Version="18.0.1" />
+		<PackageReference Include="Microsoft.TestPlatform.TestHost" Version="18.3.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="NUnitRetry.SpecFlowPlugin" Version="3.9.59" />
 		<PackageReference Include="Selenium.Support" Version="4.41.0" />
