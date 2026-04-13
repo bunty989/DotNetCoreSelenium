@@ -70,7 +70,7 @@ namespace NSWEHealth.Framework.Wrapper
                     case LocatorType.XPath:
                         {
                             dynamicElement = dWait.Until(ExpectedConditions.ElementToBeClickable(By.XPath(locatorInfo)));
-                            webElements = [.. Driver?.FindElements(By.XPath(locatorInfo))];
+                            webElements = [.. Driver.FindElements(By.XPath(locatorInfo))];
                             if (webElements.Count > 1)
                             {
                                 foreach (var webE in webElements.Where(IsElementDisplayed))
@@ -431,7 +431,7 @@ namespace NSWEHealth.Framework.Wrapper
 
         public void ExecuteJs(string javaScript, params object[] args)
         {
-            Driver.ExecuteJavaScript(javaScript, args);
+            Driver?.ExecuteJavaScript(javaScript, args);
         }
 
         public void PageRefresh()
@@ -470,7 +470,7 @@ namespace NSWEHealth.Framework.Wrapper
         {
             try
             {
-                var hiddenWebElementsValue = Driver.ExecuteJavaScript<string>("return " + identifierJScript + ".value");
+                var hiddenWebElementsValue = Driver?.ExecuteJavaScript<string>("return " + identifierJScript + ".value");
                 Log.Debug("The Value of the WebElement {0} on screen is displayed as {1}",
                     identifierJScript,
                     hiddenWebElementsValue);
@@ -532,6 +532,21 @@ namespace NSWEHealth.Framework.Wrapper
             {
                 Log.Error("Unable to determine Driver type due to {0}", ex.Message);
                 return Driver.GetType().Name;
+            }
+        }
+
+        public string? GetPageSource()
+        {
+            try
+            {
+                var pageSource = Driver?.PageSource;
+                Log.Debug("The Page Source is fetched successfully: {0}", pageSource);
+                return pageSource;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Unable to get Page Source due to {0}", ex.Message);
+                return null;
             }
         }
 

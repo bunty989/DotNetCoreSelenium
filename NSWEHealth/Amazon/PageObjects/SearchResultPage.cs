@@ -24,10 +24,13 @@ namespace NSWEHealth.Amazon.PageObjects
                 "[aria-label*='the filter Sony'] input+i");
         protected IWebElement? ChkBoxDisplayTechOled =>
             _webHelper.InitialiseDynamicWebElement(LocatorType.CssSelector,
-                "[aria-label*='the filter OLED'] input+i");
+                "[aria-label*='OLED'] input+i");
         protected IWebElement? ChkBoxDisplayRes4K =>
             _webHelper.InitialiseDynamicWebElement(LocatorType.CssSelector,
-                "[aria-label*='the filter 4K/Ultra HD'] input+i");
+                "[aria-label*='4K/Ultra'] input+i");
+        protected IWebElement? ChkBoxDisplayResFullHD =>
+            _webHelper.InitialiseDynamicWebElement(LocatorType.CssSelector,
+                "[aria-label*='1080p'] input+i");
         protected IWebElement? ChkBoxScreenSize50In =>
             _webHelper.InitialiseDynamicWebElement(LocatorType.CssSelector,
                 "[aria-label*='the filter 50-59 in'] input+i");
@@ -50,7 +53,7 @@ namespace NSWEHealth.Amazon.PageObjects
         public SearchResultPage(IWebDriver? driver) =>
             _webHelper = new WebHelper(driver);
 
-        public string GetLabelDisplayedResultFor()
+        public string? GetLabelDisplayedResultFor()
          => _webHelper?.ReturnVisibleText(LabelSearchResult);
 
         public void FilterByBrand(BrandName brandName)
@@ -80,6 +83,7 @@ namespace NSWEHealth.Amazon.PageObjects
             var displayResElement = displayResolution switch
             {
                 AmazonTestConstant.DisplayResolution.FourK => ChkBoxDisplayRes4K,
+                AmazonTestConstant.DisplayResolution.FullHD => ChkBoxDisplayResFullHD,
                 _ => null
             };
             _webHelper?.PerformWebDriverAction(displayResElement, WebDriverAction.Click);
@@ -99,8 +103,8 @@ namespace NSWEHealth.Amazon.PageObjects
         }
 
         public bool VerifyFilteredResultListDisplayed() =>
-            //WebHelper.IsElementDisplayed(ChkBoxModel2024);
-        _webHelper.IsChecked(ChkBoxDisplayRes4K?.FindElement(By.XPath("preceding-sibling::input")));
+        //WebHelper.IsElementDisplayed(ChkBoxModel2024);
+        _webHelper.IsChecked(ChkBoxDisplayResFullHD?.FindElement(By.XPath("preceding-sibling::input")));
 
         public void SortByPriceLowToHigh()
         {
@@ -114,7 +118,7 @@ namespace NSWEHealth.Amazon.PageObjects
             }
             while (!flag);
             var locator = "#s-result-sort-select_1";
-            var js = "document.querySelector(\""+locator+"\").click()";
+            var js = "document.querySelector(\"" + locator + "\").click()";
             _webHelper.ExecuteJs(js);
             WaitTillSpinnerExists();
             //_webHelper.PerformWebDriverAction(LabelLowToHigh, WebDriverAction.Click);
@@ -133,7 +137,8 @@ namespace NSWEHealth.Amazon.PageObjects
                 spinnerFlag = WebHelper.IsElementDisplayed(Spinner);
                 count++;
             }
-            while (spinnerFlag && count<30);
+            while (spinnerFlag && count < 30);
         }
+        
     }
 }
